@@ -7,6 +7,7 @@ spring.datasource.driver-class-name: org.sqlite.JDBC
 spring:
   jpa:
     defer-datasource-initialization: true
+    show-sql: true
 sql.init.mode: always
 
 spring.datasource.username: admin
