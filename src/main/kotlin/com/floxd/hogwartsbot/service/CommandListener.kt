@@ -75,8 +75,14 @@ class CommandListener(val houseRepository: HouseRepository, val auditRepository:
                         )
                     )
                     val message = event.getOption("message")?.asString
-                    val firstLine = "Added $pointsToAdd to ${house}${message?.let { ' ' + message } ?: run { "" }}!"
-                    val secondLine = "$house has now ${it.points + pointsToAdd} points in total"
+                    var firstLine = ""
+                    if (pointsToAdd > 0) {
+                        firstLine = "Awarded $pointsToAdd to ${house}${message?.let { ' ' + message } ?: run { "" }}!"
+                    }
+                    else {
+                        firstLine = "Deducted $pointsToAdd from ${house}${message?.let { ' ' + message } ?: run { "" }}!"
+                    }
+                    val secondLine = "$house now has ${it.points + pointsToAdd} points in total"
                     event.reply("$firstLine\n$secondLine").queue()
                 }, {
                     event.reply("House $house does not exist").setEphemeral(true).queue()
