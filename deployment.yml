@@ -51,15 +51,17 @@ spec:
           ports:
             - containerPort: {dockerPort}
           livenessProbe:
-            failureThreshold: 3
             httpGet:
-              path: /health
               port: {dockerPort}
-              scheme: HTTP
-            initialDelaySeconds: 10
+              path: /actuator/health/liveness
+            initialDelaySeconds: 5
             periodSeconds: 5
-            successThreshold: 1
-            timeoutSeconds: 5
+          readinessProbe:
+            httpGet:
+              port: {dockerPort}
+              path: /actuator/health/readiness
+            initialDelaySeconds: 10
+            periodSeconds: 10
           volumeMounts:
             - mountPath: "/appl/db"
               name: {name}-pv-storage
