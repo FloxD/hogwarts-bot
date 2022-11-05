@@ -51,6 +51,11 @@ class CommandListener(val houseRepository: HouseRepository, val auditRepository:
                     return
                 }
 
+                if (pointsToAdd.equals(0)) {
+                    event.reply("You cannot add zero points").setEphemeral(true).quere()
+                    return
+                }
+
                 // set first letter to uppercase in case it's lowercase
                 if (house[0].isLowerCase()) {
                     house = house[0].uppercaseChar() + house.substring(1)
