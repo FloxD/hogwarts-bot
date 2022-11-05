@@ -15,6 +15,8 @@ class CommandListener(val houseRepository: HouseRepository, val auditRepository:
 
     private val USER_ID_ELINA = "233607037232218112"
     private val USER_ID_FLOXD = "132602254531362817"
+    private val USER_ID_SMART = "897174957086343218"
+    private val MODS = setOf(USER_ID_ELINA, USER_ID_FLOXD, USER_ID_SMART)
     private val RANDOM = Random()
 
     override fun onSlashCommandInteraction(event: SlashCommandInteractionEvent) {
@@ -36,7 +38,7 @@ class CommandListener(val houseRepository: HouseRepository, val auditRepository:
             "addpoints" -> {
                 val userId = event.member?.id ?: return
 
-                if (!USER_ID_ELINA.equals(userId) && !USER_ID_FLOXD.equals(userId)) {
+                if (!MODS.contains(userId)) {
                     event.reply("You're not allowed to add points").setEphemeral(true).queue()
                     return
                 }
