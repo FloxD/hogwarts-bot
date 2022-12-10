@@ -124,7 +124,7 @@ class HouseService(val houseRepository: HouseRepository, val auditRepository: Au
         val findByName = houseRepository.findByName(normalizedHouse).toNullable()
         findByName?.let {
             houseRepository.save(House(it.id, it.name, it.points - pointsToSubtract))
-            saveAudit(it, pointsToSubtract, member)
+            saveAudit(it, pointsToSubtract * -1, member)
 
             val message = messageOption?.asString
             val firstLine = "Subtracted $pointsToSubtract from ${it.name}${message?.let { ' ' + message } ?: run { "" }}!"
@@ -153,7 +153,7 @@ class HouseService(val houseRepository: HouseRepository, val auditRepository: Au
         val findByName = houseRepository.findByName(userHouse).toNullable()
         findByName?.let {
             houseRepository.save(House(it.id, it.name, it.points - pointsToSubtract))
-            saveAudit(it, pointsToSubtract, member)
+            saveAudit(it, pointsToSubtract * -1, member)
 
             val message = messageOption?.asString
             val firstLine = "Subtracted $pointsToSubtract from ${userHouse}${message?.let { ' ' + message } ?: run { "" }}!"
