@@ -13,7 +13,8 @@ import java.time.LocalDateTime
 import java.util.*
 
 @Service
-class HouseService(val houseRepository: HouseRepository, val auditRepository: AuditRepository) {
+class HouseService(val houseRepository: HouseRepository,
+                   val auditRepository: AuditRepository) {
 
     private val RANDOM = Random()
 

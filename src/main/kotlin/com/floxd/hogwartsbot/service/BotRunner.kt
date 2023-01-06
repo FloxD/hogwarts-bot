@@ -60,6 +60,7 @@ class BotRunner(val houseRepository: HouseRepository,
                 .addOption(OptionType.INTEGER, "points", "how many points you want to subtract to the house")
                 .addOption(OptionType.USER, "user", "subtract points from the house the user belongs to")
                 .addOption(OptionType.STRING, "message", "an optional message about why points were subtracted (tip: start the message with 'for ...')"),
+            Commands.slash("practicemagic", "practice your magic. you can practice every 12 hours"),
             Commands.slash("ping", "check ping")
         )
 

@@ -4,10 +4,10 @@ import net.dv8tion.jda.api.entities.Member
 import net.dv8tion.jda.api.events.interaction.command.SlashCommandInteractionEvent
 import net.dv8tion.jda.api.hooks.ListenerAdapter
 import org.springframework.stereotype.Component
-import java.util.*
 
 @Component
-class CommandListener(val houseService: HouseService) : ListenerAdapter() {
+class CommandListener(val houseService: HouseService,
+                      val userService: UserService) : ListenerAdapter() {
 
     private val USER_ID_FLOXD = "132602254531362817"
     private val MOD_GROUP_ID = "481726205603741696"
@@ -61,6 +61,11 @@ class CommandListener(val houseService: HouseService) : ListenerAdapter() {
                     } else {
                         throw Exception("Either a house or user must be selected")
                     }
+                }
+
+                "practicemagic" -> {
+                    val message = userService.practiceMagic(event.member)
+                    event.reply(message).queue()
                 }
 
                 "ping" -> {
