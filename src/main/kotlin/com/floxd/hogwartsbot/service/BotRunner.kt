@@ -61,6 +61,13 @@ class BotRunner(val houseRepository: HouseRepository,
                 .addOption(OptionType.USER, "user", "subtract points from the house the user belongs to")
                 .addOption(OptionType.STRING, "message", "an optional message about why points were subtracted (tip: start the message with 'for ...')"),
             Commands.slash("practicemagic", "practice your magic. you can practice every 12 hours"),
+            Commands.slash("exp", "to see how much exp you have")
+                .addOption(OptionType.USER, "user", "optionally specify a different user than your own"),
+            Commands.slash("leaderboard", "show top 10 users with the most exp"),
+            Commands.slash("addexp", "add exp to a user")
+                .addOption(OptionType.USER, "user", "user to add exp to"),
+            Commands.slash("subtractexp", "subtract exp from a user")
+                .addOption(OptionType.USER, "user", "user to subtract exp from"),
             Commands.slash("ping", "check ping")
         )
 

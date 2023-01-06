@@ -68,6 +68,23 @@ class CommandListener(val houseService: HouseService,
                     event.reply(message).queue()
                 }
 
+                "exp" -> {
+                    val userOption = event.getOption("user")
+
+                    if (userOption != null) {
+                        val message = userService.exp(userOption)
+                        event.reply(message).queue()
+                    } else {
+                        val message = userService.exp(event.member)
+                        event.reply(message).queue()
+                    }
+                }
+
+                "leaderboard" -> {
+                    val message = userService.leaderBoard()
+                    event.reply(message).queue()
+                }
+
                 "ping" -> {
                     val time = System.currentTimeMillis()
                     event.reply("Pong!")
