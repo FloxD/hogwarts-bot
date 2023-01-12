@@ -5,6 +5,7 @@ import com.floxd.hogwartsbot.repository.UserRepository
 import net.dv8tion.jda.api.entities.Member
 import net.dv8tion.jda.api.interactions.commands.OptionMapping
 import org.springframework.stereotype.Service
+import java.time.Duration
 import java.time.LocalDateTime
 import java.util.*
 import javax.transaction.Transactional
@@ -13,6 +14,7 @@ import javax.transaction.Transactional
 class UserService(val userRepository: UserRepository) {
 
     private val RANDOM = Random()
+    private val PRACTICE_MAGIC_WAIT_HOURS: Long = 12
 
     @Transactional
     fun practiceMagic(member: Member?): String {
@@ -23,8 +25,9 @@ class UserService(val userRepository: UserRepository) {
         val user = userRepository.findByDiscordId(member.id)
 
         user?.let {
-            if (user.lastExp.plusHours(12).isAfter(LocalDateTime.now())) {
-                return "You need to wait 12 hrs between practicing magic"
+            if (user.lastExp.plusHours(PRACTICE_MAGIC_WAIT_HOURS).isAfter(LocalDateTime.now())) {
+                val between = Duration.between(LocalDateTime.now(), user.lastExp.plusHours(PRACTICE_MAGIC_WAIT_HOURS))
+                return "You need to wait ${between.toHoursPart()} hrs ${between.toMinutesPart()} mins until you can practicing magic again"
             }
 
             val experienceToAdd = RANDOM.nextLong(10)
