@@ -28,38 +28,48 @@ class CommandListener(val houseService: HouseService,
                 }
 
                 "addpoints" -> {
-                    hasModPrivileges(event.member)
-                    val userOption = event.getOption("user")
-                    val houseOption = event.getOption("house")
-                    val pointsToAddOption = event.getOption("points") ?: throw Exception("Points must be set")
-                    val messageOption = event.getOption("message")
+                    if (hasModPrivileges(event.member)) {
+                        val userOption = event.getOption("user")
+                        val houseOption = event.getOption("house")
+                        val pointsToAddOption = event.getOption("points") ?: throw Exception("Points must be set")
+                        val messageOption = event.getOption("message")
 
-                    if (userOption != null) {
-                        val message = houseService.addPointsUser(event.member, userOption, pointsToAddOption, messageOption)
-                        event.reply(message).queue()
-                    } else if (houseOption != null) {
-                        val message = houseService.addPointsHouse(event.member, houseOption, pointsToAddOption, messageOption)
-                        event.reply(message).queue()
+                        if (userOption != null) {
+                            val message = houseService.addPointsUser(event.member, userOption, pointsToAddOption, messageOption)
+                            event.reply(message).queue()
+                        } else if (houseOption != null) {
+                            val message = houseService.addPointsHouse(event.member, houseOption, pointsToAddOption, messageOption)
+                            event.reply(message).queue()
+                        } else {
+                            throw Exception("Either a house or user must be selected")
+                        }
                     } else {
-                        throw Exception("Either a house or user must be selected")
+                        event.reply("You need to have mod permissions to execute this command")
+                            .setEphemeral(true)
+                            .queue()
                     }
                 }
 
                 "subtractpoints" -> {
-                    hasModPrivileges(event.member)
-                    val userOption = event.getOption("user")
-                    val houseOption = event.getOption("house")
-                    val pointsToAddOption = event.getOption("points") ?: throw Exception("Points must be set")
-                    val messageOption = event.getOption("message")
+                    if (hasModPrivileges(event.member)) {
+                        val userOption = event.getOption("user")
+                        val houseOption = event.getOption("house")
+                        val pointsToAddOption = event.getOption("points") ?: throw Exception("Points must be set")
+                        val messageOption = event.getOption("message")
 
-                    if (userOption != null) {
-                        val message = houseService.subtractPointsUser(event.member, userOption, pointsToAddOption, messageOption)
-                        event.reply(message).queue()
-                    } else if (houseOption != null) {
-                        val message = houseService.subtractPointsHouse(event.member, houseOption, pointsToAddOption, messageOption)
-                        event.reply(message).queue()
+                        if (userOption != null) {
+                            val message = houseService.subtractPointsUser(event.member, userOption, pointsToAddOption, messageOption)
+                            event.reply(message).queue()
+                        } else if (houseOption != null) {
+                            val message = houseService.subtractPointsHouse(event.member, houseOption, pointsToAddOption, messageOption)
+                            event.reply(message).queue()
+                        } else {
+                            throw Exception("Either a house or user must be selected")
+                        }
                     } else {
-                        throw Exception("Either a house or user must be selected")
+                        event.reply("You need to have mod permissions to execute this command")
+                            .setEphemeral(true)
+                            .queue()
                     }
                 }
 
