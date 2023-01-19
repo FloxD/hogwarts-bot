@@ -1,13 +1,17 @@
 package com.floxd.hogwartsbot.service
 
+import com.floxd.hogwartsbot.exception.BotException
 import net.dv8tion.jda.api.entities.Member
 import net.dv8tion.jda.api.events.interaction.command.SlashCommandInteractionEvent
 import net.dv8tion.jda.api.hooks.ListenerAdapter
+import org.slf4j.LoggerFactory
 import org.springframework.stereotype.Component
 
 @Component
 class CommandListener(val houseService: HouseService,
                       val userService: UserService) : ListenerAdapter() {
+
+    private val LOGGER = LoggerFactory.getLogger(CommandListener::class.java)
 
     private val USER_ID_FLOXD = "132602254531362817"
     private val MOD_GROUP_ID = "481726205603741696"
@@ -31,17 +35,19 @@ class CommandListener(val houseService: HouseService,
                     if (hasModPrivileges(event.member)) {
                         val userOption = event.getOption("user")
                         val houseOption = event.getOption("house")
-                        val pointsToAddOption = event.getOption("points") ?: throw Exception("Points must be set")
+                        val pointsToAddOption = event.getOption("points") ?: throw BotException("Points must be set")
                         val messageOption = event.getOption("message")
 
                         if (userOption != null) {
-                            val message = houseService.addPointsUser(event.member, userOption, pointsToAddOption, messageOption)
+                            val message =
+                                houseService.addPointsUser(event.member, userOption, pointsToAddOption, messageOption)
                             event.reply(message).queue()
                         } else if (houseOption != null) {
-                            val message = houseService.addPointsHouse(event.member, houseOption, pointsToAddOption, messageOption)
+                            val message =
+                                houseService.addPointsHouse(event.member, houseOption, pointsToAddOption, messageOption)
                             event.reply(message).queue()
                         } else {
-                            throw Exception("Either a house or user must be selected")
+                            throw BotException("Either a house or user must be selected")
                         }
                     } else {
                         event.reply("You need to have mod permissions to execute this command")
@@ -54,17 +60,27 @@ class CommandListener(val houseService: HouseService,
                     if (hasModPrivileges(event.member)) {
                         val userOption = event.getOption("user")
                         val houseOption = event.getOption("house")
-                        val pointsToAddOption = event.getOption("points") ?: throw Exception("Points must be set")
+                        val pointsToAddOption = event.getOption("points") ?: throw BotException("Points must be set")
                         val messageOption = event.getOption("message")
 
                         if (userOption != null) {
-                            val message = houseService.subtractPointsUser(event.member, userOption, pointsToAddOption, messageOption)
+                            val message = houseService.subtractPointsUser(
+                                event.member,
+                                userOption,
+                                pointsToAddOption,
+                                messageOption
+                            )
                             event.reply(message).queue()
                         } else if (houseOption != null) {
-                            val message = houseService.subtractPointsHouse(event.member, houseOption, pointsToAddOption, messageOption)
+                            val message = houseService.subtractPointsHouse(
+                                event.member,
+                                houseOption,
+                                pointsToAddOption,
+                                messageOption
+                            )
                             event.reply(message).queue()
                         } else {
-                            throw Exception("Either a house or user must be selected")
+                            throw BotException("Either a house or user must be selected")
                         }
                     } else {
                         event.reply("You need to have mod permissions to execute this command")
@@ -108,8 +124,11 @@ class CommandListener(val houseService: HouseService,
                         .queue()
                 }
             }
+        } catch (e: BotException) {
+            event.reply(e.message).setEphemeral(true).queue()
         } catch (e: Exception) {
-            event.reply(e.message ?: "unknown error happened").setEphemeral(true).queue()
+            event.reply("Unknown error happened. Message FloxD if you need help.").setEphemeral(true).queue()
+            LOGGER.error("Unknown error happened.", e)
         }
     }
 

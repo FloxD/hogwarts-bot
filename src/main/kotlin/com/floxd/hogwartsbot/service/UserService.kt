@@ -1,6 +1,7 @@
 package com.floxd.hogwartsbot.service
 
 import com.floxd.hogwartsbot.entity.User
+import com.floxd.hogwartsbot.exception.BotException
 import com.floxd.hogwartsbot.repository.UserRepository
 import net.dv8tion.jda.api.entities.Member
 import net.dv8tion.jda.api.interactions.commands.OptionMapping
@@ -19,7 +20,7 @@ class UserService(val userRepository: UserRepository) {
     @Transactional
     fun practiceMagic(member: Member?): String {
         if (member == null) {
-            throw Exception("Didn't provide user - this shouldn't have happend.")
+            throw BotException("Didn't provide user - this shouldn't have happend.")
         }
 
         val user = userRepository.findByDiscordId(member.id)
@@ -48,7 +49,7 @@ class UserService(val userRepository: UserRepository) {
     fun exp(userOption: OptionMapping): String {
         val asMember = userOption.asMember
         if (asMember == null) {
-            throw Exception("Didn't provide user - this shouldn't have happend.")
+            throw BotException("Didn't provide user - this shouldn't have happend.")
         }
 
         val userId = asMember.id
@@ -64,7 +65,7 @@ class UserService(val userRepository: UserRepository) {
 
     fun exp(member: Member?): String {
         if (member == null) {
-            throw Exception("Didn't provide user - this shouldn't have happend.")
+            throw BotException("Didn't provide user - this shouldn't have happend.")
         }
 
         val user = userRepository.findByDiscordId(member.id)

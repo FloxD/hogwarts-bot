@@ -3,6 +3,7 @@ package com.floxd.hogwartsbot.service
 import com.floxd.hogwartsbot.HouseEnum
 import com.floxd.hogwartsbot.entity.Audit
 import com.floxd.hogwartsbot.entity.House
+import com.floxd.hogwartsbot.exception.BotException
 import com.floxd.hogwartsbot.repository.AuditRepository
 import com.floxd.hogwartsbot.repository.HouseRepository
 import com.floxd.hogwartsbot.toNullable
@@ -25,7 +26,7 @@ class HouseService(val houseRepository: HouseRepository,
      */
     fun getAllPoints(): String {
         val houses = houseRepository.findAll()
-        if (houses.count() == 0) { throw Exception("No houses found, this should not have happened") }
+        if (houses.count() == 0) { throw BotException("No houses found, this should not have happened") }
         return houses.map { "${it.name} has ${it.points} points.\n" }.joinToString("", "", "")
     }
 
@@ -34,7 +35,7 @@ class HouseService(val houseRepository: HouseRepository,
      *
      * @return the message to be sent to discord
      */
-    @Throws(Exception::class)
+    @Throws(BotException::class)
     fun getPoints(houseOption: OptionMapping): String {
 
         val house = houseOption.asString
@@ -45,14 +46,14 @@ class HouseService(val houseRepository: HouseRepository,
         findByName?.let {
             return "${it.name} has ${it.points} points."
         } ?: run {
-            throw Exception("Couldn't find house ${normalizedHouse} in the database")
+            throw BotException("Couldn't find house ${normalizedHouse} in the database")
         }
     }
 
     /**
      * TODO better naming
      */
-    @Throws(Exception::class)
+    @Throws(BotException::class)
     fun addPointsHouse(member: Member?, houseOption: OptionMapping, pointsOption: OptionMapping, messageOption: OptionMapping?): String {
         val house = houseOption.asString
         validateHouse(house)
@@ -61,7 +62,7 @@ class HouseService(val houseRepository: HouseRepository,
         val pointsToAdd = pointsOption.asInt
 
         if (pointsToAdd <= 0) {
-            throw Exception("Points to add must be > 0.")
+            throw BotException("Points to add must be > 0.")
         }
 
         val findByName = houseRepository.findByName(normalizedHouse).toNullable()
@@ -74,19 +75,19 @@ class HouseService(val houseRepository: HouseRepository,
             val secondLine = "${it.name} has now ${it.points + pointsToAdd} points in total"
             return "$firstLine\n$secondLine"
         } ?: run {
-            throw Exception("House starting with $normalizedHouse does not exist")
+            throw BotException("House starting with $normalizedHouse does not exist")
         }
     }
 
     /**
      * TODO better naming
      */
-    @Throws(Exception::class)
+    @Throws(BotException::class)
     fun addPointsUser(member: Member?, userOption: OptionMapping, pointsOption: OptionMapping, messageOption: OptionMapping?): String {
         val pointsToAdd = pointsOption.asInt
 
         if (pointsToAdd <= 0) {
-            throw Exception("Points to add must be > 0.")
+            throw BotException("Points to add must be > 0.")
         }
 
         // fetch the user's house
@@ -94,7 +95,7 @@ class HouseService(val houseRepository: HouseRepository,
             HouseEnum.values()
                 .map { it.houseName }
                 .contains(it.name)
-        }?.first()?.name ?: throw Exception("User has no house role.")
+        }?.first()?.name ?: throw BotException("User has no house role.")
 
         val findByName = houseRepository.findByName(userHouse).toNullable()
         findByName?.let {
@@ -106,11 +107,11 @@ class HouseService(val houseRepository: HouseRepository,
             val secondLine = "$userHouse has now ${it.points + pointsToAdd} points in total"
             return "$firstLine\n$secondLine"
         } ?: run {
-            throw Exception("House $userHouse does not exist")
+            throw BotException("House $userHouse does not exist")
         }
     }
 
-    @Throws(Exception::class)
+    @Throws(BotException::class)
     fun subtractPointsHouse(member: Member?, houseOption: OptionMapping, pointsOption: OptionMapping, messageOption: OptionMapping?): String {
         val house = houseOption.asString
         validateHouse(house)
@@ -119,7 +120,7 @@ class HouseService(val houseRepository: HouseRepository,
         val pointsToSubtract = pointsOption.asInt
 
         if (pointsToSubtract <= 0) {
-            throw Exception("Points to subtract must be > 0.")
+            throw BotException("Points to subtract must be > 0.")
         }
 
         val findByName = houseRepository.findByName(normalizedHouse).toNullable()
@@ -132,16 +133,16 @@ class HouseService(val houseRepository: HouseRepository,
             val secondLine = "${it.name} has now ${it.points - pointsToSubtract} points in total"
             return "$firstLine\n$secondLine"
         } ?: run {
-            throw Exception("House starting with $normalizedHouse does not exist")
+            throw BotException("House starting with $normalizedHouse does not exist")
         }
     }
 
-    @Throws(Exception::class)
+    @Throws(BotException::class)
     fun subtractPointsUser(member: Member?, userOption: OptionMapping, pointsOption: OptionMapping, messageOption: OptionMapping?): String {
         val pointsToSubtract = pointsOption.asInt
 
         if (pointsToSubtract <= 0) {
-            throw Exception("Points to subtract must be > 0.")
+            throw BotException("Points to subtract must be > 0.")
         }
 
         // fetch the user's house
@@ -149,7 +150,7 @@ class HouseService(val houseRepository: HouseRepository,
             HouseEnum.values()
                 .map { it.houseName }
                 .contains(it.name)
-        }?.first()?.name ?: throw Exception("User has no house role.")
+        }?.first()?.name ?: throw BotException("User has no house role.")
 
         val findByName = houseRepository.findByName(userHouse).toNullable()
         findByName?.let {
@@ -161,13 +162,13 @@ class HouseService(val houseRepository: HouseRepository,
             val secondLine = "$userHouse has now ${it.points - pointsToSubtract} points in total"
             return "$firstLine\n$secondLine"
         } ?: run {
-            throw Exception("House $userHouse does not exist")
+            throw BotException("House $userHouse does not exist")
         }
     }
 
     private fun validateHouse(house: String) {
         if (house.isBlank()) {
-            throw Exception("The value you provided for house was blank.")
+            throw BotException("The value you provided for house was blank.")
         }
     }
 
@@ -199,7 +200,7 @@ class HouseService(val houseRepository: HouseRepository,
                 house.name,
                 pointsToAdd.toLong(),
                 member?.user?.name ?: "Undefined",
-                member?.id?.toLong() ?: throw Exception("User id is not set in event. This should not happen.")
+                member?.id?.toLong() ?: throw BotException("User id is not set in event. This should not happen.")
             )
         )
     }
