@@ -141,8 +141,12 @@ class CommandListener(val houseService: HouseService,
 
         val groupIds = user.roles
 
+        LOGGER.info("${user.effectiveName} tries mod command")
+        LOGGER.info("${user.effectiveName} has roles ${user.roles.map { it::getId}.joinToString(" ")}")
         for (groupId in groupIds) {
+            LOGGER.info("trying group id ${groupId.id}")
             if (MOD_GROUP_IDS.contains(groupId.id)) {
+                LOGGER.info("success with id ${groupId.id}")
                 return true
             }
         }
