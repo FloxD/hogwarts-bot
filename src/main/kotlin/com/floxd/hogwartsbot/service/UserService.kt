@@ -83,7 +83,7 @@ class UserService(val userRepository: UserRepository) {
 
         val message = leaderboard
             .take(10)
-            .mapIndexed { index: Int, user: User -> "${index + 1}: ${user.discordName} - ${user.exp}xp" }
+            .mapIndexed { index: Int, user: User -> "${index + 1}: <@${user.discordId}> - ${user.exp}xp" }
             .joinToString("\n")
 
         return "Exp Leaderboard:\n" + message

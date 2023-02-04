@@ -1,6 +1,7 @@
 package com.floxd.hogwartsbot.service
 
 import com.floxd.hogwartsbot.exception.BotException
+import com.floxd.hogwartsbot.extension.MessageEmbedFactory
 import net.dv8tion.jda.api.entities.Member
 import net.dv8tion.jda.api.events.interaction.command.SlashCommandInteractionEvent
 import net.dv8tion.jda.api.hooks.ListenerAdapter
@@ -108,7 +109,7 @@ class CommandListener(val houseService: HouseService,
 
                 "leaderboard" -> {
                     val message = userService.leaderBoard()
-                    event.reply(message).queue()
+                    event.replyEmbeds(MessageEmbedFactory.create("Leaderboard", message)).queue()
                 }
 
                 "ping" -> {
