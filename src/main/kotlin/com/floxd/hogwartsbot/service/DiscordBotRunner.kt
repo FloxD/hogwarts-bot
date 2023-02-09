@@ -12,8 +12,8 @@ import org.springframework.stereotype.Component
 
 
 @Component
-class BotRunner(val houseRepository: HouseRepository,
-                val commandListener: CommandListener) : CommandLineRunner {
+class DiscordBotRunner(val houseRepository: HouseRepository,
+                       val discordCommandListener: DiscordCommandListener) : CommandLineRunner {
 
     override fun run(vararg args: String?) {
 
@@ -73,6 +73,6 @@ class BotRunner(val houseRepository: HouseRepository,
 
         commands.queue()
 
-        jda.addEventListener(commandListener)
+        jda.addEventListener(discordCommandListener)
     }
 }

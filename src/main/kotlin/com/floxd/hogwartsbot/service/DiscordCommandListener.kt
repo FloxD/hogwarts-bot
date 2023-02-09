@@ -9,10 +9,10 @@ import org.slf4j.LoggerFactory
 import org.springframework.stereotype.Component
 
 @Component
-class CommandListener(val houseService: HouseService,
-                      val userService: UserService) : ListenerAdapter() {
+class DiscordCommandListener(val houseService: HouseService,
+                             val userService: UserService) : ListenerAdapter() {
 
-    private val LOGGER = LoggerFactory.getLogger(CommandListener::class.java)
+    private val LOGGER = LoggerFactory.getLogger(DiscordCommandListener::class.java)
 
     private val USER_ID_FLOXD = "132602254531362817"
     private val MOD_GROUP_ID = "481726205603741696"
@@ -109,7 +109,7 @@ class CommandListener(val houseService: HouseService,
 
                 "leaderboard" -> {
                     val message = userService.leaderBoard()
-                    event.replyEmbeds(MessageEmbedFactory.create("Leaderboard", message)).queue()
+                    event.replyEmbeds(MessageEmbedFactory.create("Exp Leaderboard", message)).queue()
                 }
 
                 "ping" -> {

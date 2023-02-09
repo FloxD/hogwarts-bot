@@ -86,7 +86,7 @@ class UserService(val userRepository: UserRepository) {
             .mapIndexed { index: Int, user: User -> "${index + 1}: <@${user.discordId}> - ${user.exp}xp" }
             .joinToString("\n")
 
-        return "Exp Leaderboard:\n" + message
+        return message
     }
 
     private fun addUser(member: Member) {
