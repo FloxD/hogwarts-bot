@@ -3,6 +3,16 @@
 - java17
 - gradle
 - an env variable called DISCORD_TOKEN
+- an env variable called TWITCH_TOKEN
+
+# how to get discord token
+
+todo
+
+# how to get twitch token
+
+open https://dev.twitch.tv/docs/irc/authenticate-bot/#getting-an-access-token
+and follow the instructions under "If you just need a token for testing chat functionality"
 
 # Build
 

@@ -16,3 +16,6 @@ spring.datasource.password: admin
 management.endpoint.health.probes.enabled: true
 management.health.livenessState.enabled: true
 management.health.readinessState.enabled: true
+
+# uncomment to see all twitch websocket messages
+# logging.level.com.floxd.hogwartsbot.service: DEBUG
