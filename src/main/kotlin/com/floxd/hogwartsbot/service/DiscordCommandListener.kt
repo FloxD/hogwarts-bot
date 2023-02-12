@@ -26,7 +26,7 @@ class DiscordCommandListener(val houseService: HouseService,
                     val houseOption = event.getOption("house")
 
                     houseOption?.let {
-                        event.reply(houseService.getPoints(it)).queue()
+                        event.reply(houseService.getPoints(it.asString)).queue()
                     } ?: run {
                         event.reply(houseService.getAllPoints()).queue()
                     }

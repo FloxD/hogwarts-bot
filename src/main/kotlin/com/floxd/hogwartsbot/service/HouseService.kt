@@ -36,9 +36,8 @@ class HouseService(val houseRepository: HouseRepository,
      * @return the message to be sent to discord
      */
     @Throws(BotException::class)
-    fun getPoints(houseOption: OptionMapping): String {
+    fun getPoints(house: String): String {
 
-        val house = houseOption.asString
         validateHouse(house)
         val normalizedHouse = normalizeHouse(house)
         val findByName = houseRepository.findByName(normalizedHouse).toNullable()
@@ -74,6 +73,32 @@ class HouseService(val houseRepository: HouseRepository,
             val firstLine = "Added $pointsToAdd to ${it.name}${message?.let { ' ' + message } ?: run { "" }}!"
             val secondLine = "${it.name} has now ${it.points + pointsToAdd} points in total"
             return "$firstLine\n$secondLine"
+        } ?: run {
+            throw BotException("House starting with $normalizedHouse does not exist")
+        }
+    }
+
+    /**
+     * TODO better naming and refactor
+     */
+    @Throws(BotException::class)
+    fun addPointsHouseTwitch(house: String, pointsToAdd: Int): String {
+        validateHouse(house)
+        val normalizedHouse = normalizeHouse(house)
+
+        if (pointsToAdd <= 0) {
+            throw BotException("Points to add must be > 0.")
+        }
+
+        val findByName = houseRepository.findByName(normalizedHouse).toNullable()
+        findByName?.let {
+            houseRepository.save(House(it.id, it.name, it.points + pointsToAdd))
+            // TODO auditing for twitch commands disabled for now
+            // saveAudit(it, pointsToAdd, member)
+
+            val firstLine = "Added $pointsToAdd to ${it.name}!"
+            val secondLine = "${it.name} has now ${it.points + pointsToAdd} points in total"
+            return "$firstLine $secondLine"
         } ?: run {
             throw BotException("House starting with $normalizedHouse does not exist")
         }
@@ -132,6 +157,32 @@ class HouseService(val houseRepository: HouseRepository,
             val firstLine = "Subtracted $pointsToSubtract from ${it.name}${message?.let { ' ' + message } ?: run { "" }}!"
             val secondLine = "${it.name} has now ${it.points - pointsToSubtract} points in total"
             return "$firstLine\n$secondLine"
+        } ?: run {
+            throw BotException("House starting with $normalizedHouse does not exist")
+        }
+    }
+
+    /**
+     * TODO better naming and refactor
+     */
+    @Throws(BotException::class)
+    fun subtractPointsHouseTwitch(house: String, pointsToSubtract: Int): String {
+        validateHouse(house)
+        val normalizedHouse = normalizeHouse(house)
+
+        if (pointsToSubtract <= 0) {
+            throw BotException("Points to subtract must be > 0.")
+        }
+
+        val findByName = houseRepository.findByName(normalizedHouse).toNullable()
+        findByName?.let {
+            houseRepository.save(House(it.id, it.name, it.points - pointsToSubtract))
+            // TODO auditing for twitch commands disabled for now
+            // saveAudit(it, pointsToAdd, member)
+
+            val firstLine = "Added $pointsToSubtract to ${it.name}!"
+            val secondLine = "${it.name} has now ${it.points - pointsToSubtract} points in total"
+            return "$firstLine $secondLine"
         } ?: run {
             throw BotException("House starting with $normalizedHouse does not exist")
         }

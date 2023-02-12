@@ -1,8 +1,7 @@
 package com.floxd.hogwartsbot.service
 
+import com.floxd.hogwartsbot.exception.BotException
 import com.floxd.hogwartsbot.model.TwitchMessage
-import com.floxd.hogwartsbot.repository.HouseRepository
-import com.floxd.hogwartsbot.toNullable
 import jakarta.websocket.*
 import org.slf4j.LoggerFactory
 import org.springframework.stereotype.Component
@@ -11,9 +10,26 @@ import java.net.URI
 
 @ClientEndpoint
 @Component
-class TwitchClient(val houseRepository: HouseRepository) {
+class TwitchClient(val houseService: HouseService) {
 
     private val LOGGER = LoggerFactory.getLogger(DiscordCommandListener::class.java)
+
+    private val TWITCH_MODS = listOf(
+        "floxd",
+        "elina",
+        "360zeus",
+        "epicdonutdude_",
+        "jeffjeffingson",
+        "koksalot",
+        "kromis",
+        "smartbutautistic",
+        "teemtron",
+        "thedangerousbros",
+        "tolekk",
+        "trouserdemon",
+        "unfortunatelyaj",
+        "zugren"
+    )
 
     var session: Session? = null
     final val token: String
@@ -34,8 +50,8 @@ class TwitchClient(val houseRepository: HouseRepository) {
     fun onOpen(session: Session) {
         this.session = session
         try {
-            sendMessage("PASS oauth:${token}")
-            sendMessage("NICK wizardingworldbot")
+            sendWebsocketMessage("PASS oauth:${token}")
+            sendWebsocketMessage("NICK wizardingworldbot")
         } catch (ex: IOException) {
             println(ex)
         }
@@ -46,22 +62,102 @@ class TwitchClient(val houseRepository: HouseRepository) {
         LOGGER.debug(websocketMessage.replace("\n", ""))
 
         if (websocketMessage.contains(":tmi.twitch.tv 376 wizardingworldbot :>")) {
-            sendMessage("JOIN #elina")
+            sendWebsocketMessage("JOIN #elina")
         } else if (websocketMessage.startsWith(":wizardingworldbot") || websocketMessage.startsWith("PING")) {
             return
         } else {
             val parsedMessage = parseMessage(websocketMessage)
 
-            if (parsedMessage.message.startsWith("?ping") && parsedMessage.username == "floxd") {
-                sendMessage("PRIVMSG #elina :pong")
+            if (!parsedMessage.message.startsWith("?")) {
+                // return early if chat message isn't a command
+                return
             }
 
-            if (parsedMessage.message.startsWith("?points") && parsedMessage.username == "floxd") {
-                houseRepository.findByName("h").toNullable()?.let {
-                    sendMessage("PRIVMSG #elina :Hufflepuff has ${it.points} points")
+            val channel = parsedMessage.channel
+            val command = parsedMessage.message.split(" ")
+
+            if (command.size < 1) {
+                return
+            }
+
+            try {
+                when (command[0]) {
+                    "?ping" -> {
+                        sendChatMessage(channel, "pong")
+                    }
+
+                    "?points" -> {
+                        if (command.size == 1) {
+                            sendChatMessage(channel, houseService.getAllPoints())
+                        } else if (command.size > 1) {
+                            sendChatMessage(channel, houseService.getPoints(command[1]))
+                        }
+                    }
+
+                    "?addpoints" -> {
+                        if (hasModPrivileges(parsedMessage.username) && command.size == 3) {
+                            val house = command[1]
+                            val points = command[2]
+                            sendChatMessage(channel, houseService.addPointsHouseTwitch(house, points.toInt()))
+                        }
+                    }
+
+                    "?subtractpoints" -> {
+                        if (hasModPrivileges(parsedMessage.username) && command.size == 3) {
+                            val house = command[1]
+                            val points = command[2]
+                            sendChatMessage(channel, houseService.subtractPointsHouseTwitch(house, points.toInt()))
+                        }
+                    }
+
+                    "?help" -> {
+                        if (command.size == 1) {
+                            val s = "Available commands are ?ping, ?points, ?addpoints, ?subtractpoints"
+                            sendChatMessage(channel, "Use ?help [command] to get more info. $s")
+                        } else if (command.size > 1) {
+                            when (command[1]) {
+                                "?ping", "ping" -> {
+                                    sendChatMessage(
+                                        channel,
+                                        "This command is for checking if the Bot is running."
+                                    )
+                                }
+
+                                "?points", "points" -> {
+                                    sendChatMessage(
+                                        channel,
+                                        "Use ?points or ?points [house] to see how many points each house has."
+                                    )
+                                }
+
+                                "?addpoints", "addpoints" -> {
+                                    sendChatMessage(
+                                        channel,
+                                        "Use ?addpoints [house] [points] to add points to a house. Mod only command"
+                                    )
+                                }
+
+                                "?subtractpoints", "subtractpoints" -> {
+                                    sendChatMessage(
+                                        channel,
+                                        "Use ?subtractpoints [house] [points] to subtract points from a house. Mod only command"
+                                    )
+                                }
+                            }
+                        }
+                    }
                 }
+            } catch (e: BotException) {
+                sendChatMessage(channel, e.message)
+            } catch (e: Exception) {
+                sendChatMessage(channel, "Unknown error happened. Message FloxD if you need help.")
+                LOGGER.error("Unknown error happened.", e)
             }
         }
+    }
+
+    private fun hasModPrivileges(username: String): Boolean {
+        return TWITCH_MODS.contains(username)
     }
 
     /**
@@ -75,11 +171,16 @@ class TwitchClient(val houseRepository: HouseRepository) {
         val temp = websocketMessage.substring(websocketMessage.indexOf("#"))
         val channel = temp.substring(1, temp.indexOf(" "))
         val message = websocketMessage.substring(websocketMessage.indexOf(":", 1) + 1)
+            .replace("\r\n", "")
 
         return TwitchMessage(username, channel, message)
     }
 
-    fun sendMessage(message: String?) {
+    fun sendChatMessage(channel: String, message: String) {
+        sendWebsocketMessage("PRIVMSG #${channel} :${message}")
+    }
+
+    fun sendWebsocketMessage(message: String) {
         try {
             session!!.basicRemote.sendText(message)
         } catch (ex: IOException) {
