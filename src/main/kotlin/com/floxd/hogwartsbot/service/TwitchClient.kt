@@ -63,7 +63,9 @@ class TwitchClient(val houseService: HouseService) {
 
         if (websocketMessage.contains(":tmi.twitch.tv 376 wizardingworldbot :>")) {
             sendWebsocketMessage("JOIN #elina")
-        } else if (websocketMessage.startsWith(":wizardingworldbot") || websocketMessage.startsWith("PING")) {
+        } else if (websocketMessage.startsWith("PING")) {
+            sendWebsocketMessage("PONG :tmi.twitch.tv")
+        } else if (websocketMessage.startsWith(":wizardingworldbot")) {
             return
         } else {
             val parsedMessage = parseMessage(websocketMessage)
