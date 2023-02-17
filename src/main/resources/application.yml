@@ -19,3 +19,5 @@ management.health.readinessState.enabled: true
 
 # uncomment to see all twitch websocket messages
 # logging.level.com.floxd.hogwartsbot.service: DEBUG
+
+logging.level.org.hibernate.tuple.entity.PojoEntityTuplizer: ERROR
