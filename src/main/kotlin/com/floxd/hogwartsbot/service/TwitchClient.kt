@@ -4,9 +4,11 @@ import com.floxd.hogwartsbot.exception.BotException
 import com.floxd.hogwartsbot.model.TwitchMessage
 import jakarta.websocket.*
 import org.slf4j.LoggerFactory
+import org.springframework.scheduling.annotation.Scheduled
 import org.springframework.stereotype.Component
 import java.io.IOException
 import java.net.URI
+import java.time.LocalDateTime
 
 @ClientEndpoint
 @Component
@@ -188,5 +190,20 @@ class TwitchClient(val houseService: HouseService) {
         } catch (ex: IOException) {
             println(ex)
         }
+    }
+
+    /**
+     * hacky disconnect fix
+     * the bot keeps disconnecting after a while even though there's a handler for the PING command
+     * but sending periodic messages is a hacky workaround to fix this for now
+     * the ping is every 5 minutes and we send a chat message every minute
+     *
+     * initialDelay = 30 seconds
+     * fixedRate = 60 seconds
+     */
+    @Scheduled(initialDelay = 30000, fixedRate = 60000)
+    fun ping() {
+        LOGGER.debug("Sending scheduled keepalive message")
+        sendChatMessage("wizardingworldbot", LocalDateTime.now().toString())
     }
 }
