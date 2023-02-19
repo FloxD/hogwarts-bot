@@ -48,7 +48,7 @@ class TwitchClient(val commands: List<Command>) {
         LOGGER.debug(websocketMessage.replace("\n", ""))
 
         if (websocketMessage.contains(":tmi.twitch.tv 376 wizardingworldbot :>")) {
-            sendWebsocketMessage("JOIN #floxd")
+            sendWebsocketMessage("JOIN #elina")
         } else if (websocketMessage.startsWith("PING")) {
             sendWebsocketMessage("PONG :tmi.twitch.tv")
         } else if (websocketMessage.startsWith(":wizardingworldbot")) {
