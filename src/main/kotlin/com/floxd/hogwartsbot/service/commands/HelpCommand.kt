@@ -1,4 +1,4 @@
-package com.floxd.hogwartsbot.service
+package com.floxd.hogwartsbot.service.commands
 
 import com.floxd.hogwartsbot.model.TwitchMessage
 import net.dv8tion.jda.api.entities.MessageEmbed

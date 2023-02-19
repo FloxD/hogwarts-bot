@@ -3,6 +3,7 @@ package com.floxd.hogwartsbot.service
 import com.floxd.hogwartsbot.HouseEnum
 import com.floxd.hogwartsbot.entity.House
 import com.floxd.hogwartsbot.repository.HouseRepository
+import com.floxd.hogwartsbot.service.commands.Command
 import net.dv8tion.jda.api.JDABuilder
 import net.dv8tion.jda.api.entities.Activity
 import org.springframework.boot.CommandLineRunner

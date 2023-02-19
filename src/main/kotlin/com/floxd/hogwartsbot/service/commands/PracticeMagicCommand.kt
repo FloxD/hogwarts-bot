@@ -1,7 +1,8 @@
-package com.floxd.hogwartsbot.service
+package com.floxd.hogwartsbot.service.commands
 
 import com.floxd.hogwartsbot.extension.MessageEmbedFactory
 import com.floxd.hogwartsbot.model.TwitchMessage
+import com.floxd.hogwartsbot.service.UserService
 import net.dv8tion.jda.api.entities.MessageEmbed
 import net.dv8tion.jda.api.events.interaction.command.SlashCommandInteractionEvent
 import net.dv8tion.jda.api.interactions.commands.build.Commands
@@ -9,9 +10,9 @@ import net.dv8tion.jda.api.interactions.commands.build.SlashCommandData
 import org.springframework.stereotype.Service
 
 @Service
-class LeaderboardCommand(val userService: UserService) : Command() {
+class PracticeMagicCommand(val userService: UserService) : Command() {
     override fun commandName(): String {
-        return "leaderboard"
+        return "practicemagic"
     }
 
     override fun needsModPermissions(): Boolean {
@@ -19,11 +20,11 @@ class LeaderboardCommand(val userService: UserService) : Command() {
     }
 
     override fun slashCommandData(): SlashCommandData {
-        return Commands.slash("leaderboard", "show top 10 users with the most exp")
+        return Commands.slash("practicemagic", "practice your magic. you can practice every 12 hours")
     }
 
     override fun discordCommand(event: SlashCommandInteractionEvent): MessageEmbed {
-        return MessageEmbedFactory.create("Exp Leaderboard", userService.leaderBoard())
+        return MessageEmbedFactory.create("Practiced Magic", userService.practiceMagic(event.member))
     }
 
     override fun twitchCommand(message: TwitchMessage): String {

@@ -2,6 +2,7 @@ package com.floxd.hogwartsbot.service
 
 import com.floxd.hogwartsbot.exception.BotException
 import com.floxd.hogwartsbot.model.TwitchMessage
+import com.floxd.hogwartsbot.service.commands.Command
 import jakarta.websocket.*
 import org.slf4j.LoggerFactory
 import org.springframework.scheduling.annotation.Scheduled

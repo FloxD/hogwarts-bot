@@ -1,6 +1,7 @@
 package com.floxd.hogwartsbot.service
 
 import com.floxd.hogwartsbot.exception.BotException
+import com.floxd.hogwartsbot.service.commands.Command
 import net.dv8tion.jda.api.events.interaction.command.SlashCommandInteractionEvent
 import net.dv8tion.jda.api.hooks.ListenerAdapter
 import org.slf4j.LoggerFactory
