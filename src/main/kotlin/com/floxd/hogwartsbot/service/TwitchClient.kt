@@ -12,26 +12,9 @@ import java.time.LocalDateTime
 
 @ClientEndpoint
 @Component
-class TwitchClient(val houseService: HouseService) {
+class TwitchClient(val commands: List<Command>) {
 
     private val LOGGER = LoggerFactory.getLogger(DiscordCommandListener::class.java)
-
-    private val TWITCH_MODS = listOf(
-        "floxd",
-        "elina",
-        "360zeus",
-        "epicdonutdude_",
-        "jeffjeffingson",
-        "koksalot",
-        "kromis",
-        "smartbutautistic",
-        "teemtron",
-        "thedangerousbros",
-        "tolekk",
-        "trouserdemon",
-        "unfortunatelyaj",
-        "zugren"
-    )
 
     var session: Session? = null
     final val token: String
@@ -64,7 +47,7 @@ class TwitchClient(val houseService: HouseService) {
         LOGGER.debug(websocketMessage.replace("\n", ""))
 
         if (websocketMessage.contains(":tmi.twitch.tv 376 wizardingworldbot :>")) {
-            sendWebsocketMessage("JOIN #elina")
+            sendWebsocketMessage("JOIN #floxd")
         } else if (websocketMessage.startsWith("PING")) {
             sendWebsocketMessage("PONG :tmi.twitch.tv")
         } else if (websocketMessage.startsWith(":wizardingworldbot")) {
@@ -85,83 +68,19 @@ class TwitchClient(val houseService: HouseService) {
             }
 
             try {
-                when (command[0]) {
-                    "?ping" -> {
-                        sendChatMessage(channel, "pong")
-                    }
-
-                    "?points" -> {
-                        if (command.size == 1) {
-                            sendChatMessage(channel, houseService.getAllPoints())
-                        } else if (command.size > 1) {
-                            sendChatMessage(channel, houseService.getPoints(command[1]))
-                        }
-                    }
-
-                    "?addpoints" -> {
-                        if (hasModPrivileges(parsedMessage.username) && command.size == 3) {
-                            val house = command[1]
-                            val points = command[2]
-                            sendChatMessage(channel, houseService.addPointsHouseTwitch(house, points.toInt()))
-                        }
-                    }
-
-                    "?subtractpoints" -> {
-                        if (hasModPrivileges(parsedMessage.username) && command.size == 3) {
-                            val house = command[1]
-                            val points = command[2]
-                            sendChatMessage(channel, houseService.subtractPointsHouseTwitch(house, points.toInt()))
-                        }
-                    }
-
-                    "?help" -> {
-                        if (command.size == 1) {
-                            val s = "Available commands are ?ping, ?points, ?addpoints, ?subtractpoints"
-                            sendChatMessage(channel, "Use ?help [command] to get more info. $s")
-                        } else if (command.size > 1) {
-                            when (command[1]) {
-                                "?ping", "ping" -> {
-                                    sendChatMessage(
-                                        channel,
-                                        "This command is for checking if the Bot is running."
-                                    )
-                                }
-
-                                "?points", "points" -> {
-                                    sendChatMessage(
-                                        channel,
-                                        "Use ?points or ?points [house] to see how many points each house has."
-                                    )
-                                }
-
-                                "?addpoints", "addpoints" -> {
-                                    sendChatMessage(
-                                        channel,
-                                        "Use ?addpoints [house] [points] to add points to a house. Mod only command"
-                                    )
-                                }
-
-                                "?subtractpoints", "subtractpoints" -> {
-                                    sendChatMessage(
-                                        channel,
-                                        "Use ?subtractpoints [house] [points] to subtract points from a house. Mod only command"
-                                    )
-                                }
-                            }
-                        }
-                    }
+                val commandName = command[0].replace("?", "")
+                commands.find { it.commandName() == commandName }?.let {
+                    sendChatMessage(channel, it.runTwitch(parsedMessage))
                 }
             } catch (e: BotException) {
                 sendChatMessage(channel, e.message)
+            } catch (e: UnsupportedOperationException) {
+                sendChatMessage(channel, "Not implemented yet")
             } catch (e: Exception) {
                 sendChatMessage(channel, "Unknown error happened. Message FloxD if you need help.")
                 LOGGER.error("Unknown error happened.", e)
             }
         }
-    }
-
-    private fun hasModPrivileges(username: String): Boolean {
-        return TWITCH_MODS.contains(username)
     }
 
     /**

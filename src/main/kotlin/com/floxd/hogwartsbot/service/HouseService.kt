@@ -26,8 +26,12 @@ class HouseService(val houseRepository: HouseRepository,
      */
     fun getAllPoints(): String {
         val houses = houseRepository.findAll()
-        if (houses.count() == 0) { throw BotException("No houses found, this should not have happened") }
-        return houses.map { "${it.name} has ${it.points} points.\n" }.joinToString("", "", "")
+        if (houses.count() == 0) {
+            throw BotException("No houses found, this should not have happened")
+        }
+        return houses.sortedByDescending { it.points }
+            .map { "${it.name} has ${it.points} points.\n" }
+            .joinToString("", "", "")
     }
 
     /**
@@ -53,7 +57,10 @@ class HouseService(val houseRepository: HouseRepository,
      * TODO better naming
      */
     @Throws(BotException::class)
-    fun addPointsHouse(member: Member?, houseOption: OptionMapping, pointsOption: OptionMapping, messageOption: OptionMapping?): String {
+    fun addPointsHouse(member: Member?,
+                       houseOption: OptionMapping,
+                       pointsOption: OptionMapping,
+                       messageOption: OptionMapping?): String {
         val house = houseOption.asString
         validateHouse(house)
         val normalizedHouse = normalizeHouse(house)
@@ -108,7 +115,10 @@ class HouseService(val houseRepository: HouseRepository,
      * TODO better naming
      */
     @Throws(BotException::class)
-    fun addPointsUser(member: Member?, userOption: OptionMapping, pointsOption: OptionMapping, messageOption: OptionMapping?): String {
+    fun addPointsUser(member: Member?,
+                      userOption: OptionMapping,
+                      pointsOption: OptionMapping,
+                      messageOption: OptionMapping?): String {
         val pointsToAdd = pointsOption.asInt
 
         if (pointsToAdd <= 0) {
@@ -137,7 +147,10 @@ class HouseService(val houseRepository: HouseRepository,
     }
 
     @Throws(BotException::class)
-    fun subtractPointsHouse(member: Member?, houseOption: OptionMapping, pointsOption: OptionMapping, messageOption: OptionMapping?): String {
+    fun subtractPointsHouse(member: Member?,
+                            houseOption: OptionMapping,
+                            pointsOption: OptionMapping,
+                            messageOption: OptionMapping?): String {
         val house = houseOption.asString
         validateHouse(house)
         val normalizedHouse = normalizeHouse(house)
@@ -154,7 +167,8 @@ class HouseService(val houseRepository: HouseRepository,
             saveAudit(it, pointsToSubtract * -1, member)
 
             val message = messageOption?.asString
-            val firstLine = "Subtracted $pointsToSubtract from ${it.name}${message?.let { ' ' + message } ?: run { "" }}!"
+            val firstLine =
+                "Subtracted $pointsToSubtract from ${it.name}${message?.let { ' ' + message } ?: run { "" }}!"
             val secondLine = "${it.name} has now ${it.points - pointsToSubtract} points in total"
             return "$firstLine\n$secondLine"
         } ?: run {
@@ -180,7 +194,7 @@ class HouseService(val houseRepository: HouseRepository,
             // TODO auditing for twitch commands disabled for now
             // saveAudit(it, pointsToAdd, member)
 
-            val firstLine = "Added $pointsToSubtract to ${it.name}!"
+            val firstLine = "Subtracted $pointsToSubtract from ${it.name}!"
             val secondLine = "${it.name} has now ${it.points - pointsToSubtract} points in total"
             return "$firstLine $secondLine"
         } ?: run {
@@ -189,7 +203,10 @@ class HouseService(val houseRepository: HouseRepository,
     }
 
     @Throws(BotException::class)
-    fun subtractPointsUser(member: Member?, userOption: OptionMapping, pointsOption: OptionMapping, messageOption: OptionMapping?): String {
+    fun subtractPointsUser(member: Member?,
+                           userOption: OptionMapping,
+                           pointsOption: OptionMapping,
+                           messageOption: OptionMapping?): String {
         val pointsToSubtract = pointsOption.asInt
 
         if (pointsToSubtract <= 0) {
@@ -209,7 +226,8 @@ class HouseService(val houseRepository: HouseRepository,
             saveAudit(it, pointsToSubtract * -1, member)
 
             val message = messageOption?.asString
-            val firstLine = "Subtracted $pointsToSubtract from ${userHouse}${message?.let { ' ' + message } ?: run { "" }}!"
+            val firstLine =
+                "Subtracted $pointsToSubtract from ${userHouse}${message?.let { ' ' + message } ?: run { "" }}!"
             val secondLine = "$userHouse has now ${it.points - pointsToSubtract} points in total"
             return "$firstLine\n$secondLine"
         } ?: run {

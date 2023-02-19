@@ -5,15 +5,14 @@ import com.floxd.hogwartsbot.entity.House
 import com.floxd.hogwartsbot.repository.HouseRepository
 import net.dv8tion.jda.api.JDABuilder
 import net.dv8tion.jda.api.entities.Activity
-import net.dv8tion.jda.api.interactions.commands.OptionType
-import net.dv8tion.jda.api.interactions.commands.build.Commands
 import org.springframework.boot.CommandLineRunner
 import org.springframework.stereotype.Component
 
 
 @Component
 class DiscordBotRunner(val houseRepository: HouseRepository,
-                       val discordCommandListener: DiscordCommandListener) : CommandLineRunner {
+                       val discordCommandListener: DiscordCommandListener,
+                       val commands: List<Command>) : CommandLineRunner {
 
     override fun run(vararg args: String?) {
 
@@ -47,30 +46,7 @@ class DiscordBotRunner(val houseRepository: HouseRepository,
         // These commands might take a few minutes to be active after creation/update/delete
         val commands = jda.updateCommands()
 
-        commands.addCommands(
-            Commands.slash("points", "view points from house")
-                .addOption(OptionType.STRING, "house", "Gryffindor, Hufflepuff, Ravenclaw or Slytherin"),
-            Commands.slash("addpoints", "add points to house")
-                .addOption(OptionType.STRING, "house", "Gryffindor, Hufflepuff, Ravenclaw or Slytherin")
-                .addOption(OptionType.INTEGER, "points", "how many points you want to add to the house")
-                .addOption(OptionType.USER, "user", "add points to the house the user belongs to")
-                .addOption(OptionType.STRING, "message", "an optional message about why points were added (tip: start the message with 'for ...')"),
-            Commands.slash("subtractpoints", "subtract points from house")
-                .addOption(OptionType.STRING, "house", "Gryffindor, Hufflepuff, Ravenclaw or Slytherin")
-                .addOption(OptionType.INTEGER, "points", "how many points you want to subtract to the house")
-                .addOption(OptionType.USER, "user", "subtract points from the house the user belongs to")
-                .addOption(OptionType.STRING, "message", "an optional message about why points were subtracted (tip: start the message with 'for ...')"),
-            Commands.slash("practicemagic", "practice your magic. you can practice every 12 hours"),
-            Commands.slash("exp", "to see how much exp you have")
-                .addOption(OptionType.USER, "user", "optionally specify a different user than your own"),
-            Commands.slash("leaderboard", "show top 10 users with the most exp"),
-            Commands.slash("addexp", "add exp to a user")
-                .addOption(OptionType.USER, "user", "user to add exp to"),
-            Commands.slash("subtractexp", "subtract exp from a user")
-                .addOption(OptionType.USER, "user", "user to subtract exp from"),
-            Commands.slash("ping", "check ping")
-        )
-
+        commands.addCommands(this.commands.map { it.slashCommandData() })
         commands.queue()
 
         jda.addEventListener(discordCommandListener)
