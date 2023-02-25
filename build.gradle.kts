@@ -23,6 +23,7 @@ dependencies {
     implementation("org.jetbrains.kotlin:kotlin-stdlib-jdk8")
     implementation("net.dv8tion:JDA:5.0.0-alpha.22")
     implementation("org.xerial:sqlite-jdbc:3.25.2")
+    implementation("org.flywaydb:flyway-core:9.15.1")
     implementation("jakarta.websocket:jakarta.websocket-client-api:2.1.0")
     implementation("org.glassfish.tyrus.bundles:tyrus-standalone-client:2.1.2")
 

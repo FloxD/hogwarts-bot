@@ -1,12 +1,21 @@
 spring.jpa.database-platform: com.floxd.hogwartsbot.config.SQLDialect
-spring.jpa.hibernate.ddl-auto: update
+spring.jpa.hibernate.ddl-auto: validate
 
 spring.datasource.url: jdbc:sqlite:db/hogwartsbot.db
 spring.datasource.driver-class-name: org.sqlite.JDBC
 spring:
   jpa:
-    defer-datasource-initialization: true
+    defer-datasource-initialization: false
     show-sql: true
+  flyway:
+    url: jdbc:sqlite:db/hogwartsbot.db
+    user: admin
+    password: admin
+    schemas:
+      - main
+    enabled: true
+    baseline-on-migrate: true
+
 sql.init.mode: always
 
 spring.datasource.username: admin
