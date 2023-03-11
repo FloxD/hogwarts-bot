@@ -72,7 +72,7 @@ abstract class Command {
         val groupIds = user.roles
 
         for (groupId in groupIds) {
-            if (MOD_GROUP_IDS.contains(groupId.name)) {
+            if (MOD_GROUP_IDS.contains(groupId.id)) {
                 return true
             }
         }
