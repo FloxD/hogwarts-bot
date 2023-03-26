@@ -15,11 +15,11 @@ import javax.persistence.Table
 @Table
 @Entity
 open class User(@Id var id: Long,
-                var discordId: String,
-                var discordName: String,
+                var discordId: String?,
+                var twitchName: String?,
                 var exp: Long,
                 var lastExp: LocalDateTime) {
-    constructor() : this(0, "Undefined", "Undefined", 0, LocalDateTime.MIN) {
+    constructor() : this(0, null, null, 0, LocalDateTime.MIN) {
 
     }
 }

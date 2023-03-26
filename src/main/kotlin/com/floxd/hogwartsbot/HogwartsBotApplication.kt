@@ -12,5 +12,3 @@ class HogwartsBotApplication
 fun main(args: Array<String>) {
     runApplication<HogwartsBotApplication>(*args)
 }
-
-fun <T : Any> Optional<T>.toNullable(): T? = this.orElse(null)

@@ -28,7 +28,7 @@ class UserService(val userRepository: UserRepository) {
         user?.let {
             if (user.lastExp.plusHours(PRACTICE_MAGIC_WAIT_HOURS).isAfter(LocalDateTime.now())) {
                 val between = Duration.between(LocalDateTime.now(), user.lastExp.plusHours(PRACTICE_MAGIC_WAIT_HOURS))
-                return "You need to wait ${between.toHoursPart()} hrs ${between.toMinutesPart()} mins until you can practicing magic again"
+                return "You need to wait ${between.toHoursPart()} hrs ${between.toMinutesPart()} mins until you can practice magic again"
             }
 
             val experienceToAdd = RANDOM.nextLong(10)
@@ -56,7 +56,7 @@ class UserService(val userRepository: UserRepository) {
         val user = userRepository.findByDiscordId(userId)
 
         user?.let {
-            return "${user.discordName} has ${user.exp}xp"
+            return "<@${user.discordId}> has ${user.exp}xp"
         } ?: run {
             addUser(asMember)
             return "${asMember.effectiveName} has 0xp"
@@ -64,6 +64,7 @@ class UserService(val userRepository: UserRepository) {
     }
 
     fun exp(member: Member?): String {
+
         if (member == null) {
             throw BotException("Didn't provide user - this shouldn't have happend.")
         }
@@ -91,7 +92,7 @@ class UserService(val userRepository: UserRepository) {
 
     private fun addUser(member: Member) {
         userRepository.save(
-            User(RANDOM.nextLong(), member.id, member.effectiveName, 0, LocalDateTime.now().minusDays(10))
+            User(RANDOM.nextLong(), member.id, null, 0, LocalDateTime.now().minusDays(10))
         )
     }
 }

@@ -10,6 +10,6 @@ import java.util.*
 interface HouseRepository : CrudRepository<House, Long> {
 
     @Query("select new House(id, name, points) from House where name like ?1%")
-    fun findByName(name: String): Optional<House>
+    fun findByName(name: String): House?
 
 }

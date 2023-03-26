@@ -6,7 +6,6 @@ import com.floxd.hogwartsbot.entity.House
 import com.floxd.hogwartsbot.exception.BotException
 import com.floxd.hogwartsbot.repository.AuditRepository
 import com.floxd.hogwartsbot.repository.HouseRepository
-import com.floxd.hogwartsbot.toNullable
 import net.dv8tion.jda.api.entities.Member
 import net.dv8tion.jda.api.interactions.commands.OptionMapping
 import org.springframework.stereotype.Service
@@ -44,7 +43,7 @@ class HouseService(val houseRepository: HouseRepository,
 
         validateHouse(house)
         val normalizedHouse = normalizeHouse(house)
-        val findByName = houseRepository.findByName(normalizedHouse).toNullable()
+        val findByName = houseRepository.findByName(normalizedHouse)
 
         findByName?.let {
             return "${it.name} has ${it.points} points."
@@ -71,7 +70,7 @@ class HouseService(val houseRepository: HouseRepository,
             throw BotException("Points to add must be > 0.")
         }
 
-        val findByName = houseRepository.findByName(normalizedHouse).toNullable()
+        val findByName = houseRepository.findByName(normalizedHouse)
         findByName?.let {
             houseRepository.save(House(it.id, it.name, it.points + pointsToAdd))
             saveAudit(it, pointsToAdd, member)
@@ -97,7 +96,7 @@ class HouseService(val houseRepository: HouseRepository,
             throw BotException("Points to add must be > 0.")
         }
 
-        val findByName = houseRepository.findByName(normalizedHouse).toNullable()
+        val findByName = houseRepository.findByName(normalizedHouse)
         findByName?.let {
             houseRepository.save(House(it.id, it.name, it.points + pointsToAdd))
             // TODO auditing for twitch commands disabled for now
@@ -132,7 +131,7 @@ class HouseService(val houseRepository: HouseRepository,
                 .contains(it.name)
         }?.first()?.name ?: throw BotException("User has no house role.")
 
-        val findByName = houseRepository.findByName(userHouse).toNullable()
+        val findByName = houseRepository.findByName(userHouse)
         findByName?.let {
             houseRepository.save(House(it.id, it.name, it.points + pointsToAdd))
             saveAudit(it, pointsToAdd, member)
@@ -161,7 +160,7 @@ class HouseService(val houseRepository: HouseRepository,
             throw BotException("Points to subtract must be > 0.")
         }
 
-        val findByName = houseRepository.findByName(normalizedHouse).toNullable()
+        val findByName = houseRepository.findByName(normalizedHouse)
         findByName?.let {
             houseRepository.save(House(it.id, it.name, it.points - pointsToSubtract))
             saveAudit(it, pointsToSubtract * -1, member)
@@ -188,7 +187,7 @@ class HouseService(val houseRepository: HouseRepository,
             throw BotException("Points to subtract must be > 0.")
         }
 
-        val findByName = houseRepository.findByName(normalizedHouse).toNullable()
+        val findByName = houseRepository.findByName(normalizedHouse)
         findByName?.let {
             houseRepository.save(House(it.id, it.name, it.points - pointsToSubtract))
             // TODO auditing for twitch commands disabled for now
@@ -220,7 +219,7 @@ class HouseService(val houseRepository: HouseRepository,
                 .contains(it.name)
         }?.first()?.name ?: throw BotException("User has no house role.")
 
-        val findByName = houseRepository.findByName(userHouse).toNullable()
+        val findByName = houseRepository.findByName(userHouse)
         findByName?.let {
             houseRepository.save(House(it.id, it.name, it.points - pointsToSubtract))
             saveAudit(it, pointsToSubtract * -1, member)

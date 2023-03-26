@@ -52,6 +52,10 @@ class HelpCommand : Command() {
 
                 }
 
+                "?link", "link" -> {
+                    return "Use ?link [discordId] to link your discord user to this twitch user. Discord id is the 18 number long id."
+                }
+
                 else -> return "the command \"${command[1]}\" does not exist"
             }
         } else {
