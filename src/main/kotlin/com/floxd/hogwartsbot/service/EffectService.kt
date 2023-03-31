@@ -22,6 +22,7 @@ class EffectService(val effectRepository: EffectRepository) {
             CastingResultEnum.SUCCESS -> "*$targetUserName*'s wand flew off. They'll get it back in ${SpellEnum.EXPELLIARMUS.durationInHours} hours."
             CastingResultEnum.BACKFIRED -> "The spell backfired! Your wand flew off. you'll get it back in ${SpellEnum.EXPELLIARMUS.durationInHours} hours."
             CastingResultEnum.ALREADY_AFFECTED -> "*$targetUserName* is already disarmed and can't use magic for now."
+            CastingResultEnum.FAILED -> "Nothing happened! You need to practice more to be able to use this spell."
         }
     }
 
@@ -55,6 +56,8 @@ class EffectService(val effectRepository: EffectRepository) {
 
     @Transactional
     private fun castSpell(spell: SpellEnum, targetId: String, casterId: String, exp :Long) : CastingResultEnum {
+        if(exp < spell.minExp)
+            return CastingResultEnum.FAILED
         //Check if target has record for this effect in database. update it or add one if doesn't exist
         getEffect(spell, targetId)?.let {
             if (timeLeftUntilEffectEnds(it) != null)
@@ -86,7 +89,7 @@ class EffectService(val effectRepository: EffectRepository) {
     }
 
     private enum class CastingResultEnum {
-        SUCCESS,ALREADY_AFFECTED,BACKFIRED;
+        SUCCESS,ALREADY_AFFECTED,BACKFIRED,FAILED;
     }
 
     private fun backfired(exp: Long, spell: SpellEnum) :Boolean{
