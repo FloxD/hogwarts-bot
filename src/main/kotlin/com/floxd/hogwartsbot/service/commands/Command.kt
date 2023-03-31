@@ -22,23 +22,23 @@ abstract class Command {
     private val MOD_GROUP_IDS = setOf(MOD_GROUP_ID)
 
     private val TWITCH_MODS = listOf(
-        "floxd",
-        "elina",
-        "360zeus",
-        "epicdonutdude_",
-        "jeffjeffingson",
-        "koksalot",
-        "kromis",
-        "smartbutautistic",
-        "teemtron",
-        "thedangerousbros",
-        "tolekk",
-        "trouserdemon",
-        "unfortunatelyaj",
-        "zugren"
+            "floxd",
+            "elina",
+            "360zeus",
+            "epicdonutdude_",
+            "jeffjeffingson",
+            "koksalot",
+            "kromis",
+            "smartbutautistic",
+            "teemtron",
+            "thedangerousbros",
+            "tolekk",
+            "trouserdemon",
+            "unfortunatelyaj",
+            "zugren"
     )
 
-    fun runDiscord(event: SlashCommandInteractionEvent): MessageEmbed {
+    open fun runDiscord(event: SlashCommandInteractionEvent): MessageEmbed {
         if (needsModPermissions()) {
             if (hasDiscordModPrivileges(event.member)) {
                 return discordCommand(event)
@@ -50,7 +50,7 @@ abstract class Command {
         }
     }
 
-    fun runTwitch(message: TwitchMessage): String {
+    open fun runTwitch(message: TwitchMessage): String {
         if (needsModPermissions()) {
             if (hasTwitchModPrivileges(message.username)) {
                 return twitchCommand(message)
