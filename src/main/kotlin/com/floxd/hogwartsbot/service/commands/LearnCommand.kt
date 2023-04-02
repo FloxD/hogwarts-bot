@@ -1,19 +1,18 @@
 package com.floxd.hogwartsbot.service.commands
 
-import com.floxd.hogwartsbot.extension.MessageEmbedFactory
 import com.floxd.hogwartsbot.model.TwitchMessage
-import com.floxd.hogwartsbot.service.EffectService
-import com.floxd.hogwartsbot.service.UserService
 import net.dv8tion.jda.api.entities.MessageEmbed
 import net.dv8tion.jda.api.events.interaction.command.SlashCommandInteractionEvent
+import net.dv8tion.jda.api.interactions.commands.OptionType
 import net.dv8tion.jda.api.interactions.commands.build.Commands
 import net.dv8tion.jda.api.interactions.commands.build.SlashCommandData
 import org.springframework.stereotype.Service
+import javax.transaction.NotSupportedException
 
 @Service
-class PracticeMagicCommand(val userService: UserService, effectService1: EffectService) : MagicCommand(effectService1) {
+class LearnCommand : Command() {
     override fun commandName(): String {
-        return "practicemagic"
+        return "learn"
     }
 
     override fun needsModPermissions(): Boolean {
@@ -21,14 +20,15 @@ class PracticeMagicCommand(val userService: UserService, effectService1: EffectS
     }
 
     override fun slashCommandData(): SlashCommandData {
-        return Commands.slash("practicemagic", "practice your magic. you can practice every 12 hours")
+        return Commands.slash("learn", "learn a new spell")
+                .addOption(OptionType.STRING, "spell", "Chose the spell to learn. Available spells: Expelliarmus")
     }
 
     override fun discordCommand(event: SlashCommandInteractionEvent): MessageEmbed {
-        return MessageEmbedFactory.create("Practice Magic", userService.practiceMagic(event.member))
+        TODO("Not yet implemented")
     }
 
     override fun twitchCommand(message: TwitchMessage): String {
-        throw UnsupportedOperationException()
+        throw NotSupportedException()
     }
 }

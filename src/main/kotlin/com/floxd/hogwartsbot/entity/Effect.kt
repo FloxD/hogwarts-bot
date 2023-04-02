@@ -1,8 +1,10 @@
 package com.floxd.hogwartsbot.entity
 
+import com.floxd.hogwartsbot.SpellEnum
 import java.time.LocalDateTime
 import javax.persistence.Entity
 import javax.persistence.Id
+import javax.persistence.OneToMany
 import javax.persistence.Table
 
 /**
@@ -13,6 +15,9 @@ import javax.persistence.Table
  */
 @Table
 @Entity
-class Effect (@Id var id :Long, var discordId :String, var spellId :Long, var lastCast :LocalDateTime){
-    constructor() :this(0,"", 0, LocalDateTime.MIN)
+class Effect(@Id var id: Long,
+             @OneToMany var users: MutableSet<User>,
+             var spell: SpellEnum,
+             var lastCast: LocalDateTime) {
+    constructor() : this(0, "", 0, LocalDateTime.MIN)
 }

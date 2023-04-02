@@ -3,6 +3,7 @@ package com.floxd.hogwartsbot.entity
 import java.time.LocalDateTime
 import javax.persistence.Entity
 import javax.persistence.Id
+import javax.persistence.ManyToMany
 import javax.persistence.Table
 
 /**
@@ -19,6 +20,10 @@ open class User(@Id var id: Long,
                 var twitchName: String?,
                 var exp: Long,
                 var lastExp: LocalDateTime) {
+
+    @ManyToMany(mappedBy = "spells")
+    var spells: MutableSet<Spell> = mutableSetOf()
+
     constructor() : this(0, null, null, 0, LocalDateTime.MIN) {
 
     }

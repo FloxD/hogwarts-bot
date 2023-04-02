@@ -1,5 +1,7 @@
 package com.floxd.hogwartsbot.service.commands
 
+import com.floxd.hogwartsbot.SpellEnum
+import com.floxd.hogwartsbot.exception.BotException
 import com.floxd.hogwartsbot.extension.MessageEmbedFactory
 import com.floxd.hogwartsbot.model.TwitchMessage
 import com.floxd.hogwartsbot.service.EffectService
@@ -13,13 +15,17 @@ import org.springframework.stereotype.Service
 import javax.transaction.NotSupportedException
 
 @Service
-class ExpelliarmusCommand (val userService: UserService, val effectService: EffectService) :Command() {
+class ExpelliarmusCommand (val userService: UserService, effectService1: EffectService) : MagicCommand(effectService1) {
     override fun commandName(): String {
         return "expelliarmus"
     }
 
     override fun needsModPermissions(): Boolean {
         return false
+    }
+
+    override fun cost(): Long {
+        return SpellEnum.EXPELLIARMUS.cost
     }
 
     override fun slashCommandData(): SlashCommandData {
@@ -29,7 +35,12 @@ class ExpelliarmusCommand (val userService: UserService, val effectService: Effe
 
     override fun discordCommand(event: SlashCommandInteractionEvent): MessageEmbed {
         val targetOption = event.getOption("target")
-        return MessageEmbedFactory.create("Expelliarmus", effectService.castExpelliarmus(targetOption, event.member, userService.expAsLong(event.member)))
+
+        if (targetOption == null) {
+            throw BotException("You need to specify a target")
+        }
+
+        return MessageEmbedFactory.create("Expelliarmus", effectService.castExpelliarmus(targetOption, event.member))
     }
 
     override fun twitchCommand(message: TwitchMessage): String {

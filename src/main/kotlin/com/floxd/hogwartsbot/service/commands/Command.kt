@@ -38,7 +38,7 @@ abstract class Command {
         "zugren"
     )
 
-    fun runDiscord(event: SlashCommandInteractionEvent): MessageEmbed {
+    open fun runDiscord(event: SlashCommandInteractionEvent): MessageEmbed {
         if (needsModPermissions()) {
             if (hasDiscordModPrivileges(event.member)) {
                 return discordCommand(event)
@@ -50,7 +50,7 @@ abstract class Command {
         }
     }
 
-    fun runTwitch(message: TwitchMessage): String {
+    open fun runTwitch(message: TwitchMessage): String {
         if (needsModPermissions()) {
             if (hasTwitchModPrivileges(message.username)) {
                 return twitchCommand(message)

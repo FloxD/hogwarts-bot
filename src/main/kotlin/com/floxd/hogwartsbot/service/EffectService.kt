@@ -15,10 +15,10 @@ import kotlin.random.Random
 @Service
 class EffectService(val effectRepository: EffectRepository) {
 
-    fun castExpelliarmus(targetOption: OptionMapping?, casterMember: Member?, exp :Long) :String{
+    fun castExpelliarmus(targetOption: OptionMapping, casterMember: Member?): String {
         checkForExpelliarmusEffect(casterMember)?.let { return it }
         val targetUserName = getDiscordName(targetOption)
-        return when(castSpell(SpellEnum.EXPELLIARMUS, getDiscordId(targetOption), getDiscordId(casterMember),exp)){
+        return when (castSpell(SpellEnum.EXPELLIARMUS, getDiscordId(targetOption), getDiscordId(casterMember), exp)) {
             CastingResultEnum.SUCCESS -> "*$targetUserName*'s wand flew off. They'll get it back in ${SpellEnum.EXPELLIARMUS.durationInHours} hours."
             CastingResultEnum.BACKFIRED -> "The spell backfired! Your wand flew off. you'll get it back in ${SpellEnum.EXPELLIARMUS.durationInHours} hours."
             CastingResultEnum.ALREADY_AFFECTED -> "*$targetUserName* is already disarmed and can't use magic for now."
@@ -29,10 +29,10 @@ class EffectService(val effectRepository: EffectRepository) {
     /**Should be used in every spell function to check if the caster is under 'Expelliarmus' effect
      * @return  if under the effect, a text to use as a MessageEmbed.description. otherwise it returns null.
      */
-    fun checkForExpelliarmusEffect(member: Member?) :String?{
+    fun checkForExpelliarmusEffect(member: Member?): String? {
         val effect = getEffect(SpellEnum.EXPELLIARMUS, getDiscordId(member))
-        if(effect != null){
-            timeLeftUntilEffectEnds(effect)?.let{
+        if (effect != null) {
+            timeLeftUntilEffectEnds(effect)?.let {
                 return "Someone has casted *Expelliarmus* on you. You'll get your wand back in ${it.toHoursPart()}h, ${it.toMinutesPart()}m"
             }
         }
@@ -41,38 +41,37 @@ class EffectService(val effectRepository: EffectRepository) {
 
     /**
      * @return the duration left until the effect ends. If it has already ended returns null.
-    */
-    fun timeLeftUntilEffectEnds(effect: Effect) : Duration?{
-        val effectEndsAt= effect.lastCast.plusHours(getSpellById(effect.spellId).durationInHours)
-        if(effectEndsAt.isAfter(LocalDateTime.now()))
+     */
+    fun timeLeftUntilEffectEnds(effect: Effect): Duration? {
+        val effectEndsAt = effect.lastCast.plusHours(getSpellById(effect.spellId).durationInHours)
+        if (effectEndsAt.isAfter(LocalDateTime.now()))
             return Duration.between(LocalDateTime.now(), effectEndsAt)
         else
             return null
     }
 
-    fun getEffect(spell :SpellEnum, discordId :String) :Effect?{
+    fun getEffect(spell: SpellEnum, discordId: String): Effect? {
         return effectRepository.findByDiscordIdAndSpellId(discordId, spell.id)
     }
 
     @Transactional
-    private fun castSpell(spell: SpellEnum, targetId: String, casterId: String, exp :Long) : CastingResultEnum {
-        if(exp < spell.minExp)
+    private fun castSpell(spell: SpellEnum, targetId: String, casterId: String, exp: Long): CastingResultEnum {
+        if (exp < spell.minExp)
             return CastingResultEnum.FAILED
         //Check if target has record for this effect in database. update it or add one if doesn't exist
         getEffect(spell, targetId)?.let {
             if (timeLeftUntilEffectEnds(it) != null)
                 return CastingResultEnum.ALREADY_AFFECTED
             else {
-                val targetEffect :Effect = it
+                val targetEffect: Effect = it
                 if (backfired(exp, spell)) {
                     //The spell backfired
                     //Check if caster has record for this effect in database. update it or add one if doesn't exist
-                    val casterEffect :Effect? = getEffect(spell, casterId)
-                    if(casterEffect != null){
+                    val casterEffect: Effect? = getEffect(spell, casterId)
+                    if (casterEffect != null) {
                         casterEffect.lastCast = LocalDateTime.now()
                         effectRepository.save(casterEffect)
-                    }
-                    else{
+                    } else {
                         addEffect(casterId, spell)
                     }
                     return CastingResultEnum.BACKFIRED
@@ -89,53 +88,50 @@ class EffectService(val effectRepository: EffectRepository) {
     }
 
     private enum class CastingResultEnum {
-        SUCCESS,ALREADY_AFFECTED,BACKFIRED,FAILED;
+        SUCCESS, ALREADY_AFFECTED, BACKFIRED, FAILED;
     }
 
-    private fun backfired(exp: Long, spell: SpellEnum) :Boolean{
+    private fun backfired(exp: Long, spell: SpellEnum): Boolean {
         if (exp >= spell.perfectExp)
             return false
         val diceToBeat = Random.nextLong(spell.minExp, spell.perfectExp)
         return exp <= diceToBeat
     }
 
-    private fun addEffect(discordId :String, spell: SpellEnum) :Effect{
-        val e = Effect(Random.nextLong(),discordId,spell.id, LocalDateTime.now())
+    private fun addEffect(discordId: String, spell: SpellEnum): Effect {
+        val e = Effect(Random.nextLong(), discordId, spell.id, LocalDateTime.now())
         effectRepository.save(e)
         return e
     }
 
     @Throws(BotException::class)
-    private fun getSpellById(id :Long): SpellEnum{
-        val spell = SpellEnum.values().firstOrNull { it.id==id }
-        if(spell != null){
+    private fun getSpellById(id: Long): SpellEnum {
+        val spell = SpellEnum.values().firstOrNull { it.id == id }
+        if (spell != null) {
             return spell
-        }
-        else
+        } else
             throw BotException("Something is wrong with the bot. - enum not found.")
     }
 
     @Throws(BotException::class)
-    private fun getDiscordId(member: Member?) :String{
+    private fun getDiscordId(member: Member?): String {
         if (member == null) {
             throw BotException("Something is wrong with the bot. - member is null.")
         }
-            return member.id
+        return member.id
     }
 
     @Throws(BotException::class)
-    private fun getDiscordId(option: OptionMapping?) :String{
+    private fun getDiscordId(option: OptionMapping?): String {
         if (option == null) {
             throw BotException("Something went wrong. - option is null.")
         }
         val member = option.asMember ?: throw BotException("Something is wrong with the bot. - member is null.")
         return member.id
     }
+
     @Throws(BotException::class)
-    private fun getDiscordName(option: OptionMapping?) :String{
-        if (option == null) {
-            throw BotException("Something went wrong. - option is null.")
-        }
+    private fun getDiscordName(option: OptionMapping): String {
         return option.asUser.name
     }
 }
