@@ -79,6 +79,20 @@ class UserService(val userRepository: UserRepository) {
         }
     }
 
+    fun expAsLong(member: Member?): Long {
+        if (member == null) {
+            throw BotException("Didn't provide user - this shouldn't have happend.")
+        }
+
+        val user = userRepository.findByDiscordId(member.id)
+
+        user?.let {
+            return user.exp
+        } ?: run {
+            return 0
+        }
+    }
+
     fun leaderBoard(): String {
         val leaderboard = userRepository.leaderboard()
 
