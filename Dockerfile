@@ -1,4 +1,4 @@
-FROM gradle:7.5.1-jdk17-alpine as build
+FROM gradle:8-jdk17-alpine as build
 
 COPY . /appl
 
@@ -6,7 +6,7 @@ WORKDIR /appl
 
 RUN gradle build --info
 
-FROM eclipse-temurin:17.0.5_8-jre
+FROM eclipse-temurin:17-jre-alpine
 
 WORKDIR /appl
 
