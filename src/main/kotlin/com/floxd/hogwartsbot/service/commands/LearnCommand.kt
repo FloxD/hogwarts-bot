@@ -30,7 +30,7 @@ class LearnCommand(val spellService: SpellService) : Command() {
 
     override fun discordCommand(event: SlashCommandInteractionEvent): MessageEmbed {
         val spellOption = event.getOption("spell") ?: throw BotException("No spell was provided")
-        val spell = SpellEnum.values().firstOrNull { it.spellName == spellOption.asString }
+        val spell = SpellEnum.values().firstOrNull { it.spellName.lowercase().startsWith(spellOption.asString.lowercase()) }
                 ?: return MessageEmbedFactory.create("Learn spell", "This spell is unavailable, or you misspelled its name.")
 
         val user = event.member
