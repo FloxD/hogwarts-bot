@@ -29,3 +29,4 @@ management.health.readinessState.enabled: true
 # logging.level.com.floxd.hogwartsbot.service: DEBUG
 
 logging.level.org.hibernate.tuple.entity.PojoEntityTuplizer: ERROR
+logging.level.org.flywaydb: DEBUG
