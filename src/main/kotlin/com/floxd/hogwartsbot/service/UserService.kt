@@ -83,16 +83,24 @@ class UserService(val userRepository: UserRepository) {
         val leaderboard = userRepository.leaderboard()
 
         val message = leaderboard
-            .take(10)
-            .mapIndexed { index: Int, user: User -> "${index + 1}: <@${user.discordId}> - ${user.exp}xp" }
-            .joinToString("\n")
+                .take(10)
+                .mapIndexed { index: Int, user: User -> "${index + 1}: <@${user.discordId}> - ${user.exp}xp" }
+                .joinToString("\n")
 
         return message
     }
 
-    private fun addUser(member: Member) {
-        userRepository.save(
-            User(RANDOM.nextLong(), member.id, null, 0, LocalDateTime.now().minusDays(10))
+    fun getUser(discordId: String): User? {
+        return userRepository.findByDiscordId(discordId)
+    }
+
+    fun addUser(member: Member): User {
+        return userRepository.save(
+                User(RANDOM.nextLong(), member.id, null, 0, LocalDateTime.now().minusYears(1))
         )
+    }
+
+    fun updateUser(user: User): User {
+        return userRepository.save(user)
     }
 }
