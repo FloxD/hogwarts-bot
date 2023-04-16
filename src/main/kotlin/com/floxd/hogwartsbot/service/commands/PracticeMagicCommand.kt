@@ -3,6 +3,7 @@ package com.floxd.hogwartsbot.service.commands
 import com.floxd.hogwartsbot.extension.MessageEmbedFactory
 import com.floxd.hogwartsbot.model.TwitchMessage
 import com.floxd.hogwartsbot.service.EffectService
+import com.floxd.hogwartsbot.service.SpellService
 import com.floxd.hogwartsbot.service.UserService
 import net.dv8tion.jda.api.entities.MessageEmbed
 import net.dv8tion.jda.api.events.interaction.command.SlashCommandInteractionEvent
@@ -11,7 +12,9 @@ import net.dv8tion.jda.api.interactions.commands.build.SlashCommandData
 import org.springframework.stereotype.Service
 
 @Service
-class PracticeMagicCommand(val userService: UserService, effectService1: EffectService) : MagicCommand(effectService1) {
+class PracticeMagicCommand(effectService: EffectService,
+                           spellService: SpellService,
+                           userService: UserService) : MagicCommand(effectService, spellService, userService) {
     override fun commandName(): String {
         return "practicemagic"
     }

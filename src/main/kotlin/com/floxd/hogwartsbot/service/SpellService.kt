@@ -25,7 +25,7 @@ class SpellService(val spellRepository: SpellRepository, val effectService: Effe
                     "You have ${user.exp}xp but you need at least ${spell.cost}."
         }
 
-        spellRepository.save(Spell(Random.nextLong(), SpellEnum.EXPELLIARMUS, user, 0, LocalDateTime.now().minusYears(1)))
+        spellRepository.save(Spell(Random.nextLong(), spell, user, 0, LocalDateTime.now().minusYears(1)))
 
         user.exp -= spell.cost
         userService.updateUser(user)
@@ -67,6 +67,11 @@ class SpellService(val spellRepository: SpellRepository, val effectService: Effe
                 return CastingResult.SUCCESS
             }
         }
+    }
+
+    @Transactional
+    fun updateLastCast(spell: SpellEnum, userId: Long, lastCast: LocalDateTime) {
+        spellRepository.updateSpellLastCast(spell, userId, lastCast)
     }
 
     enum class CastingResult {
