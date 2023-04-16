@@ -24,8 +24,9 @@ class LearnCommand(val spellService: SpellService) : Command() {
     }
 
     override fun slashCommandData(): SlashCommandData {
+        val spells = SpellEnum.values().map { it.spellName }.joinToString(", ")
         return Commands.slash("learn", "learn a new spell")
-                .addOption(OptionType.STRING, "spell", "Chose the spell to learn. Available spells: Expelliarmus", true)
+                .addOption(OptionType.STRING, "spell", "Chose the spell to learn. Available spells: ${spells}", true)
     }
 
     override fun discordCommand(event: SlashCommandInteractionEvent): MessageEmbed {
