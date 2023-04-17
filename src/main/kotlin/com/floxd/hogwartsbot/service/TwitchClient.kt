@@ -5,7 +5,6 @@ import com.floxd.hogwartsbot.model.TwitchMessage
 import com.floxd.hogwartsbot.service.commands.Command
 import jakarta.websocket.*
 import org.slf4j.LoggerFactory
-import org.springframework.scheduling.annotation.Scheduled
 import org.springframework.stereotype.Component
 import java.io.IOException
 import java.net.URI
@@ -95,7 +94,7 @@ class TwitchClient(val commands: List<Command>) {
         val temp = websocketMessage.substring(websocketMessage.indexOf("#"))
         val channel = temp.substring(1, temp.indexOf(" "))
         val message = websocketMessage.substring(websocketMessage.indexOf(":", 1) + 1)
-            .replace("\r\n", "")
+                .replace("\r\n", "")
 
         return TwitchMessage(username, channel, message)
     }
@@ -121,7 +120,7 @@ class TwitchClient(val commands: List<Command>) {
      * initialDelay = 30 seconds
      * fixedRate = 60 seconds
      */
-    @Scheduled(initialDelay = 30000, fixedRate = 60000)
+    //@Scheduled(initialDelay = 30000, fixedRate = 60000)
     fun ping() {
         LOGGER.debug("Sending scheduled keepalive message")
         sendChatMessage("wizardingworldbot", LocalDateTime.now().toString())

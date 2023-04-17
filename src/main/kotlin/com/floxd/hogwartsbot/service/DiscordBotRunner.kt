@@ -9,6 +9,7 @@ import org.springframework.stereotype.Component
 
 @Component
 class DiscordBotRunner(val discordCommandListener: DiscordCommandListener,
+                       val discordMessageListener: DiscordMessageListener,
                        val commands: List<Command>) : CommandLineRunner {
 
     override fun run(vararg args: String?) {
@@ -28,5 +29,6 @@ class DiscordBotRunner(val discordCommandListener: DiscordCommandListener,
         commands.queue()
 
         jda.addEventListener(discordCommandListener)
+        jda.addEventListener(discordMessageListener)
     }
 }
