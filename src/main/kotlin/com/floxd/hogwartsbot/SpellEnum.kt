@@ -11,5 +11,5 @@ enum class SpellEnum(val spellName: String, val durationInHours: Long, val coold
     NO_CHARM("empty", 0, 0, 0),
     EXPELLIARMUS("Expelliarmus", 12, 48, 50),
     PROTEGO("Protego", 12, 16, 75),
-    INCENDIO("Incendio", 6, 12, 50)
+    INCENDIO("Incendio", 1, 12, 50)
 }
