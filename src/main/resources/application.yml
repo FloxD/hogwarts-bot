@@ -30,3 +30,6 @@ management.health.readinessState.enabled: true
 
 logging.level.org.hibernate.tuple.entity.PojoEntityTuplizer: ERROR
 logging.level.org.flywaydb: DEBUG
+
+incendio:
+  enabled: false
