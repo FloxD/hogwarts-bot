@@ -22,12 +22,14 @@ gradle build --info
 
 ```shell
 # local; build container
-docker build -f Dockerfile -t hogwarts-bot:0.0.1 .
-docker tag hogwarts-bot:0.0.1 myregistry.com/hogwarts-bot:0.0.1
-docker push myregistry.com/hogwarts-bot:0.0.1
+docker build -f Dockerfile -t hogwarts-bot:latest .
+docker tag hogwarts-bot:latest myregistry.com/hogwarts-bot:latest
+docker push myregistry.com/hogwarts-bot:latest
 
 # on server; pull and start container
-docker pull myregistry.com/hogwarts-bot:0.0.1
-docker run -d --restart always --mount source=sqlite,target=/appl/db --env-file=hogwarts-bot.env myregistry.com/hogwarts-bot:0.0.1
+docker ps | grep hogwarts-bot | awk '{print $1}' | xargs docker stop || true
+docker pull myregistry.com/hogwarts-bot:latest
+docker run -d --restart always --mount source=sqlite,target=/appl/db --env-file=hogwarts-bot.env myregistry.com/hogwarts-bot:latest
+docker ps | grep hogwarts-bot | awk '{print $1}' | xargs docker logs -f || true
 # expects a hogwarts-bot.env file with the DISCORD_TOKEN variable
 ```
