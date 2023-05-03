@@ -9,7 +9,7 @@ package com.floxd.hogwartsbot
  */
 enum class SpellEnum(val spellName: String, val durationInHours: Long, val cooldownInHours: Long, val cost: Long) {
     NO_CHARM("empty", 0, 0, 0),
-    EXPELLIARMUS("Expelliarmus", 12, 48, 50),
+    EXPELLIARMUS("Expelliarmus", 30, 48, 50),
     PROTEGO("Protego", 12, 16, 75),
     INCENDIO("Incendio", 1, 12, 50)
 }
