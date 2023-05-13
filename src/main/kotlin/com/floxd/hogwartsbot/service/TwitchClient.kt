@@ -5,6 +5,7 @@ import com.floxd.hogwartsbot.model.TwitchMessage
 import com.floxd.hogwartsbot.service.commands.Command
 import jakarta.websocket.*
 import org.slf4j.LoggerFactory
+import org.springframework.scheduling.annotation.Scheduled
 import org.springframework.stereotype.Component
 import java.io.IOException
 import java.net.URI
@@ -46,7 +47,11 @@ class TwitchClient(val commands: List<Command>) {
     fun processMessage(websocketMessage: String) {
         LOGGER.debug(websocketMessage.replace("\n", ""))
 
-        if (websocketMessage.contains(":tmi.twitch.tv 376 wizardingworldbot :>")) {
+        if (websocketMessage.contains(":tmi.twitch.tv NOTICE * :Login authentication failed")) {
+            LOGGER.error("Twitch Authentication Failed")
+            session!!.close()
+            return
+        } else if (websocketMessage.contains(":tmi.twitch.tv 376 wizardingworldbot :>")) {
             sendWebsocketMessage("JOIN #elina")
         } else if (websocketMessage.startsWith("PING")) {
             sendWebsocketMessage("PONG :tmi.twitch.tv")
@@ -105,7 +110,11 @@ class TwitchClient(val commands: List<Command>) {
 
     fun sendWebsocketMessage(message: String) {
         try {
-            session!!.basicRemote.sendText(message)
+            if (session!!.isOpen) {
+                session!!.basicRemote.sendText(message)
+            } else {
+                LOGGER.debug("Session is closed, skipping sending websocket message \"${message}\"")
+            }
         } catch (ex: IOException) {
             println(ex)
         }
@@ -120,7 +129,7 @@ class TwitchClient(val commands: List<Command>) {
      * initialDelay = 30 seconds
      * fixedRate = 60 seconds
      */
-    //@Scheduled(initialDelay = 30000, fixedRate = 60000)
+    @Scheduled(initialDelay = 30000, fixedRate = 60000)
     fun ping() {
         LOGGER.debug("Sending scheduled keepalive message")
         sendChatMessage("wizardingworldbot", LocalDateTime.now().toString())
